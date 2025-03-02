@@ -35,7 +35,7 @@ public class PopulateBeanWithPropertyValuesTest {
 		BeanDefinition beanDefinition = new BeanDefinition(Person.class, propertyValuesForPerson);
 		beanFactory.registerBeanDefinition("person", beanDefinition);
 
-		Person person = (Person) beanFactory.getBean("person");
+		Person person = beanFactory.getBean("person",Person.class);
 		System.out.println(person);
 		Car car = person.getCar();
 	}

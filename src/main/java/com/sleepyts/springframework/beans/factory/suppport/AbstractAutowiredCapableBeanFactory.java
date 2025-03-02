@@ -2,12 +2,13 @@ package com.sleepyts.springframework.beans.factory.suppport;
 
 import com.sleepyts.springframework.beans.factory.PropertyValue;
 import com.sleepyts.springframework.beans.factory.PropertyValues;
+import com.sleepyts.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.config.BeanReference;
 
 import java.lang.reflect.Field;
 
-public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFactory {
+public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
     BeanInstantiationStrategy beanInstantiationStrategy=new SimpleBeanInstantiationStrategy();
     @Override

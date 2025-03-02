@@ -4,16 +4,16 @@ import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 
 public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFactory {
 
+    BeanInstantiationStrategy simple=new CglibBeanInstantiationStrategy();
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition) {
         return doCreateBean(beanName, beanDefinition);
     }
 
-    private Object doCreateBean(String beanName, BeanDefinition beanDefinition) {
-        Class<?> beanClass = beanDefinition.getBeanClass();
+    protected Object doCreateBean(String beanName, BeanDefinition beanDefinition) {
         Object bean = null;
         try {
-            bean = beanClass.getDeclaredConstructor().newInstance();
+            bean = simple.instance(beanDefinition);
         } catch (Exception e) {
 
         }

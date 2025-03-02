@@ -40,8 +40,7 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
             try {
                 // 简单解决bean的依赖关系
                 //todo 解决循环依赖问题
-                if (argValue instanceof BeanReference){
-                    BeanReference beanReference = (BeanReference) argValue;
+                if (argValue instanceof BeanReference beanReference){
                     argValue=getBean(beanReference.getBeanName());
                 }
                 Field arg = bean.getClass().getDeclaredField(argName);

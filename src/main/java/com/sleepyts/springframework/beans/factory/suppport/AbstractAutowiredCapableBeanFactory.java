@@ -4,13 +4,16 @@ import com.sleepyts.springframework.beans.factory.PropertyValue;
 import com.sleepyts.springframework.beans.factory.PropertyValues;
 import com.sleepyts.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
+import com.sleepyts.springframework.beans.factory.config.BeanPostProcessor;
 import com.sleepyts.springframework.beans.factory.config.BeanReference;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
-    BeanInstantiationStrategy beanInstantiationStrategy=new SimpleBeanInstantiationStrategy();
+    BeanInstantiationStrategy beanInstantiationStrategy = new SimpleBeanInstantiationStrategy();
+
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition) {
         return doCreateBean(beanName, beanDefinition);
@@ -20,33 +23,34 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
         Object bean = null;
         try {
             bean = doInstanceBean(beanDefinition);
-            doAddPropertyValues(bean,beanDefinition,beanName);
+            doAddPropertyValues(bean, beanDefinition, beanName);
+            initializeBean(beanName,bean,beanDefinition);
         } catch (Exception e) {
 
         }
-        registerSingleton(beanName,bean);
+        registerSingleton(beanName, bean);
         return bean;
     }
 
-    private Object doInstanceBean(BeanDefinition beanDefinition){
+    private Object doInstanceBean(BeanDefinition beanDefinition) {
         return beanInstantiationStrategy.instance(beanDefinition);
     }
 
-    private void doAddPropertyValues(Object bean,BeanDefinition beanDefinition,String beanName){
+    private void doAddPropertyValues(Object bean, BeanDefinition beanDefinition, String beanName) {
         PropertyValues propertyValues = beanDefinition.getPropertyValues();
-        for(PropertyValue propertyValue:propertyValues.getPropertyValues()){
+        for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
             String argName = propertyValue.getName();
-            Object argValue= propertyValue.getValue();
+            Object argValue = propertyValue.getValue();
 
             try {
                 // 简单解决bean的依赖关系
                 //todo 解决循环依赖问题
-                if (argValue instanceof BeanReference beanReference){
-                    argValue=getBean(beanReference.getBeanName());
+                if (argValue instanceof BeanReference beanReference) {
+                    argValue = getBean(beanReference.getBeanName());
                 }
                 Field arg = bean.getClass().getDeclaredField(argName);
                 arg.setAccessible(true);
-                arg.set(bean,argValue);
+                arg.set(bean, argValue);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
@@ -54,4 +58,40 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
             }
         }
     }
+
+    protected void initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+        bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+
+        invokeInitMethods(beanName,bean,beanDefinition);
+        bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+    }
+
+    protected Object applyBeanPostProcessorBeforeInitialization(Object existBean, String beanName) {
+        List<BeanPostProcessor> beanPostProcessors = this.getBeanPostProcessors();
+        Object ret = existBean;
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            Object o = beanPostProcessor.postProcessBeforeInitialization(existBean, beanName);
+            if (o == null)
+                return ret;
+            ret = o;
+        }
+        return ret;
+    }
+
+    protected Object applyBeanPostProcessorAfterInitialization(Object existBean, String beanName) {
+        List<BeanPostProcessor> beanPostProcessors = this.getBeanPostProcessors();
+        Object ret = existBean;
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            Object o = beanPostProcessor.postProcessAfterInitialization(existBean, beanName);
+            if (o == null)
+                return ret;
+            ret = o;
+        }
+        return ret;
+    }
+
+    protected void invokeInitMethods(String beanName,Object bean,BeanDefinition beanDefinition){
+
+    }
+
 }

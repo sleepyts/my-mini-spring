@@ -1,5 +1,8 @@
 package com.sleepyts.springframework.beans.factory.suppport;
 
+import cn.hutool.core.util.StrUtil;
+import com.sleepyts.springframework.beans.factory.DestroyBean;
+import com.sleepyts.springframework.beans.factory.InitializingBean;
 import com.sleepyts.springframework.beans.factory.PropertyValue;
 import com.sleepyts.springframework.beans.factory.PropertyValues;
 import com.sleepyts.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -8,6 +11,7 @@ import com.sleepyts.springframework.beans.factory.config.BeanPostProcessor;
 import com.sleepyts.springframework.beans.factory.config.BeanReference;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
@@ -24,10 +28,12 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
         try {
             bean = doInstanceBean(beanDefinition);
             doAddPropertyValues(bean, beanDefinition, beanName);
-            initializeBean(beanName,bean,beanDefinition);
+            initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
 
         }
+
+        registerDisposableBeanIfNecessary(beanName,bean,beanDefinition);
         registerSingleton(beanName, bean);
         return bean;
     }
@@ -60,9 +66,10 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
     }
 
     protected void initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
-        bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+        bean = applyBeanPostProcessorBeforeInitialization(bean, beanName);
 
-        invokeInitMethods(beanName,bean,beanDefinition);
+        invokeInitMethods(beanName, bean, beanDefinition);
+
         bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
     }
 
@@ -90,8 +97,35 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
         return ret;
     }
 
-    protected void invokeInitMethods(String beanName,Object bean,BeanDefinition beanDefinition){
+    protected void invokeInitMethods(String beanName, Object bean, BeanDefinition beanDefinition) {
+        if (bean instanceof InitializingBean initializingBean) {
+            initializingBean.afterPropertiesSet();
+        }
+        String initMethodName = beanDefinition.getInitMethodName();
+
+        if (!initMethodName.isBlank() && !(bean instanceof InitializingBean && "afterPropertiesSet".equals(initMethodName))) {
+            try {
+                Class<?> beanClass = bean.getClass();
+                Method method = beanClass.getMethod(initMethodName);
+                method.invoke(bean);
+            } catch (Exception e) {
+
+            }
+
+        }
 
     }
 
+    /**
+     * 注册有销毁方法的bean，即bean继承自DisposableBean或有自定义的销毁方法
+     *
+     * @param beanName
+     * @param bean
+     * @param beanDefinition
+     */
+    protected void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition beanDefinition) {
+        if (bean instanceof DestroyBean || StrUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
+            registerDestroyBean(beanName, new DisposableBeanAdapter(bean, beanName, beanDefinition));
+        }
+    }
 }

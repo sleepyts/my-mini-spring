@@ -11,15 +11,20 @@ public class BeanDefinition {
 
     // bean对应的Class
     private Class<?> beanClass;
+
     private PropertyValues propertyValues;
 
+    private String initMethodName;
+
+    private String destroyMethodName;
+
     public BeanDefinition(Class<?> beanClass) {
-        this(beanClass,null);
+        this(beanClass, null);
     }
 
-    public BeanDefinition(Class<?> beanClass, PropertyValues propertyValues){
-        this.beanClass=beanClass;
-        this.propertyValues=propertyValues==null?new PropertyValues():propertyValues;
+    public BeanDefinition(Class<?> beanClass, PropertyValues propertyValues) {
+        this.beanClass = beanClass;
+        this.propertyValues = propertyValues == null ? new PropertyValues() : propertyValues;
     }
 
     public Class<?> getBeanClass() {
@@ -36,5 +41,21 @@ public class BeanDefinition {
 
     public void setPropertyValues(PropertyValues propertyValues) {
         this.propertyValues = propertyValues;
+    }
+
+    public String getInitMethodName() {
+        return initMethodName;
+    }
+
+    public String getDestroyMethodName() {
+        return destroyMethodName;
+    }
+
+    public void setInitMethodName(String initMethodName) {
+        this.initMethodName = initMethodName;
+    }
+
+    public void setDestroyMethodName(String destroyMethodName) {
+        this.destroyMethodName = destroyMethodName;
     }
 }

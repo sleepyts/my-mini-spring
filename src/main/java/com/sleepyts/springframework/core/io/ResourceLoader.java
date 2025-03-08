@@ -1,4 +1,4 @@
-package com.sleepyts.springframework.beans.core.io;
+package com.sleepyts.springframework.core.io;
 
 
 /**

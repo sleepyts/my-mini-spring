@@ -1,8 +1,8 @@
 package com.sleepyts.springframework.tests;
 
 import cn.hutool.core.io.IoUtil;
-import com.sleepyts.springframework.beans.core.io.DefaultResourceLoader;
-import com.sleepyts.springframework.beans.core.io.Resource;
+import com.sleepyts.springframework.core.io.DefaultResourceLoader;
+import com.sleepyts.springframework.core.io.Resource;
 import org.junit.Test;
 
 import java.io.InputStream;

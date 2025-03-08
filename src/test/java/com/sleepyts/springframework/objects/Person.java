@@ -21,6 +21,7 @@ public class Person {
 	}
 
 	public int getAge() {
+		System.out.println("init...");
 		return age;
 	}
 

@@ -3,6 +3,7 @@ package com.sleepyts.springframework.beans.factory.suppport;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +42,11 @@ public class DefaultListableBeanFactory extends AbstractAutowiredCapableBeanFact
         }
 
         return beanDefinition;
+    }
+
+    @Override
+    public void preInstantiateSingletons() {
+        Arrays.stream(getAllBeanDefinitionNames()).forEach(this::getBean);
     }
 
     @Override

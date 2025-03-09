@@ -4,7 +4,7 @@ package com.sleepyts.springframework.objects;
  * @author derekyi
  * @date 2020/11/24
  */
-public class Person {
+public class Person implements Cloneable {
 
 	private String name;
 

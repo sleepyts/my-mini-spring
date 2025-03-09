@@ -1,10 +1,7 @@
 package com.sleepyts.springframework.beans.factory.suppport;
 
 import cn.hutool.core.util.StrUtil;
-import com.sleepyts.springframework.beans.factory.DestroyBean;
-import com.sleepyts.springframework.beans.factory.InitializingBean;
-import com.sleepyts.springframework.beans.factory.PropertyValue;
-import com.sleepyts.springframework.beans.factory.PropertyValues;
+import com.sleepyts.springframework.beans.factory.*;
 import com.sleepyts.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.config.BeanPostProcessor;
@@ -30,11 +27,12 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
             doAddPropertyValues(bean, beanDefinition, beanName);
             initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
-        registerDisposableBeanIfNecessary(beanName,bean,beanDefinition);
-        registerSingleton(beanName, bean);
+        registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
+        if (beanDefinition.isSingleton())
+            registerSingleton(beanName, bean);
         return bean;
     }
 
@@ -66,6 +64,9 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
     }
 
     protected void initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+        if (bean instanceof BeanFactoryAware beanFactoryAware) {
+            beanFactoryAware.setBeanFactory(this);
+        }
         bean = applyBeanPostProcessorBeforeInitialization(bean, beanName);
 
         invokeInitMethods(beanName, bean, beanDefinition);
@@ -124,7 +125,7 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
      * @param beanDefinition
      */
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition beanDefinition) {
-        if (bean instanceof DestroyBean || StrUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
+        if (beanDefinition.isSingleton()&&bean instanceof DestroyBean || StrUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
             registerDestroyBean(beanName, new DisposableBeanAdapter(bean, beanName, beanDefinition));
         }
     }

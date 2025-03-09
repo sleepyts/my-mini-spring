@@ -46,7 +46,11 @@ public class DefaultListableBeanFactory extends AbstractAutowiredCapableBeanFact
 
     @Override
     public void preInstantiateSingletons() {
-        Arrays.stream(getAllBeanDefinitionNames()).forEach(this::getBean);
+        Arrays.stream(getAllBeanDefinitionNames()).forEach(e -> {
+            if (beanDefinitionMap.get(e).isSingleton()) {
+                getBean(e);
+            }
+        });
     }
 
     @Override

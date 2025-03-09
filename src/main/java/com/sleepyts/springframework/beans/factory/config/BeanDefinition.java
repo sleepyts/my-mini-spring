@@ -9,6 +9,13 @@ import com.sleepyts.springframework.beans.factory.PropertyValues;
  */
 public class BeanDefinition {
 
+
+    // 单例
+    private static final String SCOPE_SINGLETON = "singleton";
+
+    // 多例
+    private static final String SCOPE_PROTOTYPE = "prototype";
+
     // bean对应的Class
     private Class<?> beanClass;
 
@@ -18,6 +25,9 @@ public class BeanDefinition {
 
     private String destroyMethodName;
 
+    // 默认单例
+    private String scope = SCOPE_SINGLETON;
+
     public BeanDefinition(Class<?> beanClass) {
         this(beanClass, null);
     }
@@ -25,6 +35,22 @@ public class BeanDefinition {
     public BeanDefinition(Class<?> beanClass, PropertyValues propertyValues) {
         this.beanClass = beanClass;
         this.propertyValues = propertyValues == null ? new PropertyValues() : propertyValues;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public boolean isSingleton() {
+        return scope.equals(SCOPE_SINGLETON);
+    }
+
+    public boolean isPROTOTYPE(){
+        return scope.equals(SCOPE_PROTOTYPE);
     }
 
     public Class<?> getBeanClass() {

@@ -17,6 +17,7 @@ public class AspectJExpressionPointcut implements ClassFilter, PointCut, MethodM
 
     static {
         SUPPORTED_PRIMITIVES.add(PointcutPrimitive.EXECUTION);
+        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_ANNOTATION);
     }
 
     private final PointcutExpression pointcutExpression;
@@ -36,7 +37,7 @@ public class AspectJExpressionPointcut implements ClassFilter, PointCut, MethodM
 
     @Override
     public boolean matches(Method method, Class<?> targetClass) {
-        return pointcutExpression.matchesMethodExecution(method).alwaysMatches();
+        return pointcutExpression.matchesMethodExecution(method).maybeMatches();
     }
 
     @Override

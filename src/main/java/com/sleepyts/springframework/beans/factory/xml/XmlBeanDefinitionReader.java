@@ -39,6 +39,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
     public static final String SCOPE_ATTRIBUTE = "scope";
     public static final String COMPONENT_SCAN_ELEMENT = "component-scan";
+    public static final String PROXY_TARGET_CLASS_ATTRIBUTE = "proxy-target-class";
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
@@ -98,6 +99,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             String initMethodName = bean.attributeValue(INIT_METHOD_ATTRIBUTE);
             String destroyMethodName = bean.attributeValue(DESTROY_METHOD_ATTRIBUTE);
             String beanScope = bean.attributeValue(SCOPE_ATTRIBUTE);
+            String proxyTargetClass = bean.attributeValue(PROXY_TARGET_CLASS_ATTRIBUTE);
 
             Class<?> clazz;
             try {
@@ -117,6 +119,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             beanDefinition.setDestroyMethodName(destroyMethodName);
             if (StrUtil.isNotEmpty(beanScope)) {
                 beanDefinition.setScope(beanScope);
+            }
+            if (Boolean.parseBoolean(proxyTargetClass)){
+                beanDefinition.setProxyTargetClass(true);
             }
 
             List<Element> propertyList = bean.elements(PROPERTY_ELEMENT);

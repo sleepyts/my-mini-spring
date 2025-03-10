@@ -10,11 +10,13 @@ import com.sleepyts.springframework.beans.factory.BeanFactory;
 import com.sleepyts.springframework.beans.factory.BeanFactoryAware;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.suppport.DefaultListableBeanFactory;
+import com.sleepyts.springframework.context.annotation.Component;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import java.util.Collection;
 
+@Component
 public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, AutoProxyBeanProcessor {
 
     private DefaultListableBeanFactory beanFactory;
@@ -46,7 +48,7 @@ public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, AutoPro
                 advisedSupport.setTargetSource(new TargetSource(target));
                 advisedSupport.setMethodMatcher(advisorBean.getPointcut().getMethodMatcher());
                 advisedSupport.setMethodInterceptor((MethodInterceptor) advisorBean.getAdvice());
-
+                advisedSupport.setProxyTargetClass(beanDefinition.getProxyTargetClass());
                 return new ProxyFactory(advisedSupport).getProxy();
             }
         }

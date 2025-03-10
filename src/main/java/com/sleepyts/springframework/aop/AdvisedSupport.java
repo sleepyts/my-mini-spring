@@ -6,15 +6,12 @@ import org.aopalliance.intercept.MethodInterceptor;
 public class AdvisedSupport {
 
 
-    // 是否使用Cglib进行代理
     private boolean proxyTargetClass = false;
-    // 代理对象源
+
     private TargetSource targetSource;
 
-    // 切面方法
     private MethodInterceptor methodInterceptor;
 
-    // 切面路径
     private MethodMatcher methodMatcher;
 
     public TargetSource getTargetSource() {

@@ -4,18 +4,16 @@ package com.sleepyts.springframework.beans.factory.config;
 import com.sleepyts.springframework.beans.factory.PropertyValues;
 
 /**
- * 保存bean的实例信息
+ * Stores the configuration of a bean definition
  */
 public class BeanDefinition {
 
 
-    // 单例
     private static final String SCOPE_SINGLETON = "singleton";
 
-    // 多例
     private static final String SCOPE_PROTOTYPE = "prototype";
 
-    // bean对应的Class
+    // The class of the bean to be instantiated
     private Class<?> beanClass;
 
     private PropertyValues propertyValues;
@@ -24,8 +22,11 @@ public class BeanDefinition {
 
     private String destroyMethodName;
 
-    // 默认单例
+    // Default scope is singleton
     private String scope = SCOPE_SINGLETON;
+
+    // Whether to proxy the target class for AOP(CGLib), default is false(JDK dynamic proxy)
+    private boolean proxyTargetClass = false;
 
     public BeanDefinition(Class<?> beanClass) {
         this(beanClass, null);
@@ -36,6 +37,13 @@ public class BeanDefinition {
         this.propertyValues = propertyValues == null ? new PropertyValues() : propertyValues;
     }
 
+    public void setProxyTargetClass(boolean proxyTargetClass) {
+        this.proxyTargetClass = proxyTargetClass;
+    }
+
+    public boolean getProxyTargetClass() {
+        return proxyTargetClass;
+    }
     public void setScope(String scope) {
         this.scope = scope;
     }

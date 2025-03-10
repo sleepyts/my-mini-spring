@@ -28,6 +28,8 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
         Object bean = applyBeanPostProcessorBeforeInitialization(beanDefinition.getBeanClass(), beanName);
         if (bean != null) {
             bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+            if (beanDefinition.isSingleton())
+                registerSingleton(beanName, bean);
         }
         return bean;
     }

@@ -49,7 +49,8 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
             try {
                 // 简单解决bean的依赖关系
                 //todo 解决循环依赖问题
-                if (argValue instanceof BeanReference beanReference) {
+                if (argValue instanceof BeanReference) {
+                    BeanReference beanReference = (BeanReference) argValue;
                     argValue = getBean(beanReference.getBeanName());
                 }
                 Field arg = bean.getClass().getDeclaredField(argName);
@@ -64,7 +65,8 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
     }
 
     protected void initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
-        if (bean instanceof BeanFactoryAware beanFactoryAware) {
+        if (bean instanceof BeanFactoryAware) {
+            BeanFactoryAware beanFactoryAware = (BeanFactoryAware) bean;
             beanFactoryAware.setBeanFactory(this);
         }
         bean = applyBeanPostProcessorBeforeInitialization(bean, beanName);
@@ -99,12 +101,13 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
     }
 
     protected void invokeInitMethods(String beanName, Object bean, BeanDefinition beanDefinition) {
-        if (bean instanceof InitializingBean initializingBean) {
+        if (bean instanceof InitializingBean) {
+            InitializingBean initializingBean = (InitializingBean) bean;
             initializingBean.afterPropertiesSet();
         }
         String initMethodName = beanDefinition.getInitMethodName();
 
-        if (!initMethodName.isBlank() && !(bean instanceof InitializingBean && "afterPropertiesSet".equals(initMethodName))) {
+        if (!initMethodName.isEmpty() && !(bean instanceof InitializingBean && "afterPropertiesSet".equals(initMethodName))) {
             try {
                 Class<?> beanClass = bean.getClass();
                 Method method = beanClass.getMethod(initMethodName);

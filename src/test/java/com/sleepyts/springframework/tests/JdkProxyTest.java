@@ -69,4 +69,8 @@ public class JdkProxyTest {
         return methodInterceptor;
     }
 
+    @Test
+    public void testProxy() {
+    }
+
 }

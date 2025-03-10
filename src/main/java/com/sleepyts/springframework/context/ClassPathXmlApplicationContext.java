@@ -11,6 +11,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 
     public ClassPathXmlApplicationContext(String[] locations) {
         this.locations = locations;
+
         refresh();
     }
 

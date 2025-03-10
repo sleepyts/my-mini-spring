@@ -1,6 +1,7 @@
 package com.sleepyts.springframework.beans.factory.suppport;
 
 import cn.hutool.core.util.StrUtil;
+import com.sleepyts.springframework.aop.framework.autoproxy.AutoProxyBeanProcessor;
 import com.sleepyts.springframework.beans.factory.*;
 import com.sleepyts.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
@@ -17,8 +18,33 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition) {
+        Object bean = resolveBeforeInstantiation(beanName, beanDefinition);
+        if (bean != null)
+            return bean;
         return doCreateBean(beanName, beanDefinition);
     }
+
+    protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
+        Object bean = applyBeanPostProcessorBeforeInitialization(beanDefinition.getBeanClass(), beanName);
+        if (bean != null) {
+            bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+        }
+        return bean;
+    }
+
+    protected Object applyBeanPostProcessorBeforeInitialization(Class<?> beanClass, String beanName) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof AutoProxyBeanProcessor) {
+                Object result = ((AutoProxyBeanProcessor) beanPostProcessor).autoProxyProcess(beanClass, beanName);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition) {
         Object bean = null;
@@ -107,7 +133,7 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
         }
         String initMethodName = beanDefinition.getInitMethodName();
 
-        if (!initMethodName.isEmpty() && !(bean instanceof InitializingBean && "afterPropertiesSet".equals(initMethodName))) {
+        if (initMethodName != null && !initMethodName.isEmpty() && !(bean instanceof InitializingBean && "afterPropertiesSet".equals(initMethodName))) {
             try {
                 Class<?> beanClass = bean.getClass();
                 Method method = beanClass.getMethod(initMethodName);

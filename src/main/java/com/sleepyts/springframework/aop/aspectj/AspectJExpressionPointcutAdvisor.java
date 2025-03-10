@@ -6,13 +6,12 @@ import org.aopalliance.aop.Advice;
 
 public class AspectJExpressionPointcutAdvisor implements AdvisorPointcut {
 
-    private final AspectJExpressionPointcut pointcut;
+    private AspectJExpressionPointcut pointcut;
     private String expression;
     private Advice advice;
 
-    public AspectJExpressionPointcutAdvisor(String expression) {
+    public void setExpression(String expression) {
         this.expression = expression;
-        pointcut = new AspectJExpressionPointcut(expression);
     }
 
 
@@ -27,6 +26,9 @@ public class AspectJExpressionPointcutAdvisor implements AdvisorPointcut {
 
     @Override
     public PointCut getPointcut() {
+        if (pointcut == null) {
+            pointcut = new AspectJExpressionPointcut(expression);
+        }
         return pointcut;
     }
 }

@@ -1,21 +1,31 @@
 package com.sleepyts.springframework.beans.factory.xml;
 
+
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.XmlUtil;
 import com.sleepyts.springframework.beans.factory.PropertyValue;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.config.BeanReference;
 import com.sleepyts.springframework.beans.factory.suppport.AbstractBeanDefinitionReader;
 import com.sleepyts.springframework.beans.factory.suppport.BeanDefinitionRegistry;
+import com.sleepyts.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import com.sleepyts.springframework.core.io.Resource;
 import com.sleepyts.springframework.core.io.ResourceLoader;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
+
+/**
+ * 读取配置在xml文件中的bean定义信息
+ *
+ * @author derekyi
+ * @date 2020/11/26
+ */
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
     public static final String BEAN_ELEMENT = "bean";
@@ -27,7 +37,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
     public static final String REF_ATTRIBUTE = "ref";
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
-    public static final String SCOPE = "scope";
+    public static final String SCOPE_ATTRIBUTE = "scope";
+    public static final String COMPONENT_SCAN_ELEMENT = "component-scan";
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
@@ -35,17 +46,6 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry, ResourceLoader resourceLoader) {
         super(registry, resourceLoader);
-    }
-
-    @Override
-    public void loadBeanDefinitions(Resource resource) {
-        try {
-            try (InputStream inputStream = resource.getInputStream()) {
-                doLoadBeanDefinitions(inputStream);
-            }
-        } catch (IOException ex) {
-
-        }
     }
 
     @Override
@@ -61,67 +61,91 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         }
     }
 
-
-    protected void doLoadBeanDefinitions(InputStream inputStream) {
-        Document document = XmlUtil.readXML(inputStream);
-        Element root = document.getDocumentElement();
-        NodeList childNodes = root.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            if (childNodes.item(i) instanceof Element) {
-                if (BEAN_ELEMENT.equals(((Element) childNodes.item(i)).getNodeName())) {
-                    //解析bean标签
-                    Element bean = (Element) childNodes.item(i);
-                    String id = bean.getAttribute(ID_ATTRIBUTE);
-                    String name = bean.getAttribute(NAME_ATTRIBUTE);
-                    String className = bean.getAttribute(CLASS_ATTRIBUTE);
-                    String initMethodName = bean.getAttribute(INIT_METHOD_ATTRIBUTE);
-                    String destroyMethodName = bean.getAttribute(DESTROY_METHOD_ATTRIBUTE);
-                    String scope = bean.getAttribute(SCOPE);
-                    Class<?> clazz = null;
-                    try {
-                        clazz = Class.forName(className);
-                    } catch (ClassNotFoundException e) {
-                    }
-                    //id优先于name
-                    String beanName = StrUtil.isNotEmpty(id) ? id : name;
-                    if (StrUtil.isEmpty(beanName)) {
-                        //如果id和name都为空，将类名的第一个字母转为小写后作为bean的名称
-                        beanName = StrUtil.lowerFirst(clazz.getSimpleName());
-                    }
-
-                    BeanDefinition beanDefinition = new BeanDefinition(clazz);
-                    beanDefinition.setInitMethodName(initMethodName);
-                    beanDefinition.setDestroyMethodName(destroyMethodName);
-                    if (!scope.isEmpty())
-                        beanDefinition.setScope(scope);
-                    for (int j = 0; j < bean.getChildNodes().getLength(); j++) {
-                        if (bean.getChildNodes().item(j) instanceof Element) {
-                            if (PROPERTY_ELEMENT.equals(((Element) bean.getChildNodes().item(j)).getNodeName())) {
-                                //解析property标签
-                                Element property = (Element) bean.getChildNodes().item(j);
-                                String nameAttribute = property.getAttribute(NAME_ATTRIBUTE);
-                                String valueAttribute = property.getAttribute(VALUE_ATTRIBUTE);
-                                String refAttribute = property.getAttribute(REF_ATTRIBUTE);
-
-                                if (StrUtil.isEmpty(nameAttribute)) {
-                                }
-
-                                Object value = valueAttribute;
-                                if (StrUtil.isNotEmpty(refAttribute)) {
-                                    value = new BeanReference(refAttribute);
-                                }
-                                PropertyValue propertyValue = new PropertyValue(nameAttribute, value);
-                                beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
-                            }
-                        }
-                    }
-                    if (getRegistry().containsBeanDefinition(beanName)) {
-                        //beanName不能重名
-                    }
-                    //注册BeanDefinition
-                    getRegistry().registerBeanDefinition(beanName, beanDefinition);
-                }
+    @Override
+    public void loadBeanDefinitions(Resource resource) {
+        try {
+            InputStream inputStream = resource.getInputStream();
+            try {
+                doLoadBeanDefinitions(inputStream);
+            } finally {
+                inputStream.close();
             }
+        } catch (IOException | DocumentException e) {
         }
+    }
+
+    protected void doLoadBeanDefinitions(InputStream inputStream) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(inputStream);
+
+        Element root = document.getRootElement();
+
+        Element componentScan = root.element(COMPONENT_SCAN_ELEMENT);
+        if (componentScan != null) {
+            String basePackage = componentScan.attributeValue("base-package");
+            if (StrUtil.isEmpty(basePackage)) {
+                throw new IllegalArgumentException("base-package attribute of component-scan element is required");
+            }
+            doScan(basePackage);
+        }
+
+        List<Element> beanList = root.elements(BEAN_ELEMENT);
+
+        for (Element bean : beanList) {
+            String beanId = bean.attributeValue(ID_ATTRIBUTE);
+            String beanName = bean.attributeValue(NAME_ATTRIBUTE);
+            String className = bean.attributeValue(CLASS_ATTRIBUTE);
+            String initMethodName = bean.attributeValue(INIT_METHOD_ATTRIBUTE);
+            String destroyMethodName = bean.attributeValue(DESTROY_METHOD_ATTRIBUTE);
+            String beanScope = bean.attributeValue(SCOPE_ATTRIBUTE);
+
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("class not found: " + className, e);
+            }
+            //id优先于name
+            beanName = StrUtil.isNotEmpty(beanId) ? beanId : beanName;
+            if (StrUtil.isEmpty(beanName)) {
+                //如果id和name都为空，将类名的第一个字母转为小写后作为bean的名称
+                beanName = StrUtil.lowerFirst(clazz.getSimpleName());
+            }
+
+            BeanDefinition beanDefinition = new BeanDefinition(clazz);
+            beanDefinition.setInitMethodName(initMethodName);
+            beanDefinition.setDestroyMethodName(destroyMethodName);
+            if (StrUtil.isNotEmpty(beanScope)) {
+                beanDefinition.setScope(beanScope);
+            }
+
+            List<Element> propertyList = bean.elements(PROPERTY_ELEMENT);
+            for (Element property : propertyList) {
+                String propertyNameAttribute = property.attributeValue(NAME_ATTRIBUTE);
+                String propertyValueAttribute = property.attributeValue(VALUE_ATTRIBUTE);
+                String propertyRefAttribute = property.attributeValue(REF_ATTRIBUTE);
+
+                if (StrUtil.isEmpty(propertyNameAttribute)) {
+                }
+
+                Object value = propertyValueAttribute;
+                if (StrUtil.isNotEmpty(propertyRefAttribute)) {
+                    value = new BeanReference(propertyRefAttribute);
+                }
+                PropertyValue propertyValue = new PropertyValue(propertyNameAttribute, value);
+                beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
+            }
+            if (getRegistry().containsBeanDefinition(beanName)) {
+                //beanName不能重名
+            }
+            //注册BeanDefinition
+            getRegistry().registerBeanDefinition(beanName, beanDefinition);
+        }
+    }
+
+    private void doScan(String basePackage) {
+        String[] basePackages = basePackage.split(",");
+        ClassPathBeanDefinitionScanner classPathBeanDefinitionScanner = new ClassPathBeanDefinitionScanner(getRegistry());
+        classPathBeanDefinitionScanner.doScan(basePackages);
     }
 }

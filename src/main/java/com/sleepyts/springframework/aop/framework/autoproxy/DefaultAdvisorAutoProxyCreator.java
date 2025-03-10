@@ -50,5 +50,16 @@ public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, AutoPro
                 return new ProxyFactory(advisedSupport).getProxy();
             }
         }
+        return null;
+    }
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
+        return bean;
     }
 }

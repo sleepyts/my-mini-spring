@@ -13,6 +13,7 @@ public class GeneralInterceptor implements MethodInterceptor {
     private ThrowAdvice throwAdvice;
     private AfterAdvice afterAdvice;
     private AfterReturningAdvice afterReturningAdvice;
+
     public void setAfterAdvice(AfterAdvice afterAdvice) {
         this.afterAdvice = afterAdvice;
     }

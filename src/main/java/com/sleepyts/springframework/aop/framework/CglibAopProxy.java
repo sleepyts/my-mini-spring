@@ -54,7 +54,7 @@ public class CglibAopProxy implements AopProxy {
 
         @Override
         public Object proceed() throws Throwable {
-            return this.methodProxy.invoke(target, arguments );
+            return this.methodProxy.invoke(target, arguments);
         }
     }
 }

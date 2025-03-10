@@ -9,17 +9,17 @@ import org.junit.Test;
 
 public class XmlFileDefineBeanTest {
 
-	@Test
-	public void testXmlFile() throws Exception {
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+    @Test
+    public void testXmlFile() throws Exception {
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
-		beanDefinitionReader.loadBeanDefinitions("classpath:spring.xml");
+        beanDefinitionReader.loadBeanDefinitions("classpath:spring.xml");
 
-		Person person = (Person) beanFactory.getBean("person");
-		System.out.println(person);
+        Person person = (Person) beanFactory.getBean("person");
+        System.out.println(person);
 
-		Car car =  beanFactory.getBean("car",Car.class);
-		System.out.println(car);
-	}
+        Car car = beanFactory.getBean("car", Car.class);
+        System.out.println(car);
+    }
 }

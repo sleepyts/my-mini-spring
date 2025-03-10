@@ -128,8 +128,12 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
      * @param beanDefinition
      */
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition beanDefinition) {
-        if (beanDefinition.isSingleton()&&bean instanceof DestroyBean || StrUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
+        if (beanDefinition.isSingleton() && bean instanceof DestroyBean || StrUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
             registerDestroyBean(beanName, new DisposableBeanAdapter(bean, beanName, beanDefinition));
         }
+    }
+
+    public BeanInstantiationStrategy getBeanInstantiationStrategy() {
+        return beanInstantiationStrategy;
     }
 }

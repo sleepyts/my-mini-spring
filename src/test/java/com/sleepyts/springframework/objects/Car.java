@@ -1,8 +1,5 @@
 package com.sleepyts.springframework.objects;
 
-import com.sleepyts.springframework.beans.factory.*;
-import com.sleepyts.springframework.context.ApplicationContext;
-
 /**
  * @author derekyi
  * @date 2020/11/24

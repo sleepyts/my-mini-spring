@@ -43,4 +43,8 @@ public class AspectJExpressionPointcut implements ClassFilter, PointCut, MethodM
     public MethodMatcher getMethodMatcher() {
         return this;
     }
+
+    public ClassFilter getClassFilter() {
+        return this;
+    }
 }

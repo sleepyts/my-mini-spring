@@ -7,10 +7,10 @@ import org.junit.Test;
 
 public class BeanDefinitionTests {
     @Test
-    public void testBeanFactory(){
+    public void testBeanFactory() {
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-        BeanDefinition beanDefinition=new BeanDefinition(A.class);
-        beanFactory.registerBeanDefinition("a",beanDefinition);
+        BeanDefinition beanDefinition = new BeanDefinition(A.class);
+        beanFactory.registerBeanDefinition("a", beanDefinition);
 
         A a = (A) beanFactory.getBean("a");
         a.fun();

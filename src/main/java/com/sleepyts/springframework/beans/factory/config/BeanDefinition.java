@@ -1,7 +1,6 @@
 package com.sleepyts.springframework.beans.factory.config;
 
 
-import com.sleepyts.springframework.beans.factory.PropertyValue;
 import com.sleepyts.springframework.beans.factory.PropertyValues;
 
 /**
@@ -49,7 +48,7 @@ public class BeanDefinition {
         return scope.equals(SCOPE_SINGLETON);
     }
 
-    public boolean isPROTOTYPE(){
+    public boolean isPROTOTYPE() {
         return scope.equals(SCOPE_PROTOTYPE);
     }
 

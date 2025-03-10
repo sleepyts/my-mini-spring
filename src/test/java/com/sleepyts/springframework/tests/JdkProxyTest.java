@@ -5,7 +5,6 @@ import com.sleepyts.springframework.aop.GeneralInterceptor;
 import com.sleepyts.springframework.aop.MethodMatcher;
 import com.sleepyts.springframework.aop.TargetSource;
 import com.sleepyts.springframework.aop.aspectj.AspectJExpressionPointcut;
-import com.sleepyts.springframework.aop.framework.CglibAopProxy;
 import com.sleepyts.springframework.aop.framework.JdkAopProxy;
 import com.sleepyts.springframework.aop.framework.ProxyFactory;
 import com.sleepyts.springframework.interceptor.*;
@@ -49,7 +48,6 @@ public class JdkProxyTest {
         GeneralInterceptor methodInterceptor = getGeneralInterceptor();
 
         advisedSupport.setMethodInterceptor(methodInterceptor);
-
 
 
         advisedSupport.setProxyTargetClass(true);

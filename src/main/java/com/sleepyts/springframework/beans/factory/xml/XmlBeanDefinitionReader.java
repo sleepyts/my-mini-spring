@@ -2,13 +2,13 @@ package com.sleepyts.springframework.beans.factory.xml;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
-import com.sleepyts.springframework.core.io.Resource;
-import com.sleepyts.springframework.core.io.ResourceLoader;
 import com.sleepyts.springframework.beans.factory.PropertyValue;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.config.BeanReference;
 import com.sleepyts.springframework.beans.factory.suppport.AbstractBeanDefinitionReader;
 import com.sleepyts.springframework.beans.factory.suppport.BeanDefinitionRegistry;
+import com.sleepyts.springframework.core.io.Resource;
+import com.sleepyts.springframework.core.io.ResourceLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

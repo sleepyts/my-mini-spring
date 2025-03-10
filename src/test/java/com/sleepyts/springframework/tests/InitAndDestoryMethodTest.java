@@ -10,16 +10,16 @@ import org.junit.Test;
  */
 public class InitAndDestoryMethodTest {
 
-	@Test
-	public void testInitAndDestroyMethod() throws Exception {
-		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
-		applicationContext.registerShutDownHook();  //或者手动关闭 applicationContext.close();
-		Object car = applicationContext.getBean("car");
-		Object car1 = applicationContext.getBean("car");
+    @Test
+    public void testInitAndDestroyMethod() throws Exception {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        applicationContext.registerShutDownHook();  //或者手动关闭 applicationContext.close();
+        Object car = applicationContext.getBean("car");
+        Object car1 = applicationContext.getBean("car");
 
-		System.out.println(car);
-		System.out.println(car1);
+        System.out.println(car);
+        System.out.println(car1);
 
-		System.out.println(car.equals(car1));
-	}
+        System.out.println(car.equals(car1));
+    }
 }

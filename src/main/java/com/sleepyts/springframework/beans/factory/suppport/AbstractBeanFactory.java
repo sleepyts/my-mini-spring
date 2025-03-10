@@ -1,6 +1,5 @@
 package com.sleepyts.springframework.beans.factory.suppport;
 
-import com.sleepyts.springframework.beans.factory.BeanFactory;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.config.BeanPostProcessor;
 import com.sleepyts.springframework.beans.factory.config.ConfigurableBeanFactory;

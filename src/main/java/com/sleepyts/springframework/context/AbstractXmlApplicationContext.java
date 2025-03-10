@@ -10,7 +10,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableA
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
         XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory, this);
         String[] configLocations = getConfigLocations();
-        if (configLocations!=null){
+        if (configLocations != null) {
             xmlBeanDefinitionReader.loadBeanDefinitions(configLocations);
         }
     }

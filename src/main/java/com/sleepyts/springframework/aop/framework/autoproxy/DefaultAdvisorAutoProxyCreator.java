@@ -29,8 +29,9 @@ public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, Instant
     }
 
     @Override
-    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
+    public Object postProcessAfterInstantiation(Object bean, String beanName) {
         // Ignore Advice, PointCut, and Advisor classes
+        Class<?> beanClass = bean.getClass();
         if (Advice.class.isAssignableFrom(beanClass) ||
                 PointCut.class.isAssignableFrom(beanClass) ||
                 Advisor.class.isAssignableFrom(beanClass)
@@ -54,15 +55,5 @@ public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, Instant
             }
         }
         return null;
-    }
-
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) {
-        return bean;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) {
-        return bean;
     }
 }

@@ -18,7 +18,6 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
             Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
             for (BeanDefinition candidate : candidates) {
                 Class<?> beanClass = candidate.getBeanClass();
-                // todo 解析scope;
                 if (beanClass.isAnnotationPresent(Scope.class)) {
                     String scope = beanClass.getAnnotation(Scope.class).value();
                     if (!scope.equals(Scope.PROTOTYPE) && !scope.equals(Scope.SINGLETON))
@@ -34,7 +33,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
         Class<?> beanClass = beanDefinition.getBeanClass();
         if (beanClass.isAnnotationPresent(Component.class)) {
             String name = beanClass.getAnnotation(Component.class).value();
-            if (!name.isEmpty()) {
+            if (name!= null &&!name.isEmpty()) {
                 return name;
             }
         }

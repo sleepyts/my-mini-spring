@@ -21,8 +21,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor{
      * @param beanName
      * @return
      */
-    default boolean postProcessAfterInstantiation(Object bean, String beanName){
-        return true;
+    default Object postProcessAfterInstantiation(Object bean, String beanName){
+        return bean;
     }
 
 

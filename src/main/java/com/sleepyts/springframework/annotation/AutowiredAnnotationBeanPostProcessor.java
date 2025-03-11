@@ -23,6 +23,27 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         Class<?> beanClass = bean.getClass();
         Field[] declaredFields = beanClass.getDeclaredFields();
         for (Field declaredField : declaredFields) {
+            Value value = declaredField.getAnnotation(Value.class);
+            if (value != null && !value.value().isEmpty()) {
+                String valueStr = value.value();
+                declaredField.setAccessible(true);
+                try {
+                    if (declaredField.getType() == String.class)
+                        declaredField.set(bean, valueStr);
+                    else if (declaredField.getType() == int.class || declaredField.getType() == Integer.class)
+                        declaredField.set(bean, Integer.parseInt(valueStr));
+                    else if (declaredField.getType() == long.class || declaredField.getType() == Long.class)
+                        declaredField.set(bean, Long.parseLong(valueStr));
+                    else if (declaredField.getType() == double.class || declaredField.getType() == Double.class)
+                        declaredField.set(bean, Double.parseDouble(valueStr));
+                    else if (declaredField.getType() == float.class || declaredField.getType() == Float.class)
+                        declaredField.set(bean, Float.parseFloat(valueStr));
+                    else if (declaredField.getType() == boolean.class || declaredField.getType() == Boolean.class)
+                        declaredField.set(bean, Boolean.parseBoolean(valueStr));
+                } catch (IllegalAccessException e) {
+
+                }
+            }
             Autowired autowired = declaredField.getAnnotation(Autowired.class);
             Qualifier qualifier = declaredField.getAnnotation(Qualifier.class);
             if (autowired != null) {
@@ -42,11 +63,5 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         }
 
         return pvs;
-    }
-
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) {
-        return null;
     }
 }

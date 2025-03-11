@@ -70,7 +70,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     public abstract ConfigurableListableBeanFactory getBeanFactory();
 
-    protected abstract void refreshBeanFactory();
+    protected abstract void  refreshBeanFactory();
 
     public void registerShutDownHook() {
         Thread shutDownHook = new Thread() {

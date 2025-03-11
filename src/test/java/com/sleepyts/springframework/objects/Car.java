@@ -1,9 +1,6 @@
 package com.sleepyts.springframework.objects;
 
-import com.sleepyts.springframework.annotation.Autowired;
-import com.sleepyts.springframework.annotation.Component;
-import com.sleepyts.springframework.annotation.Qualifier;
-import com.sleepyts.springframework.annotation.Scope;
+import com.sleepyts.springframework.annotation.*;
 
 /**
  * @author derekyi
@@ -11,20 +8,16 @@ import com.sleepyts.springframework.annotation.Scope;
  */
 
 @Component("car")
-@Scope("prototype")
 public class Car {
 
     @Autowired
     private Person person;
 
-    private String brand;
+    @Value("true")
+    private boolean brand;
 
-    public String getBrand() {
+    public boolean getBrand() {
         return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.sleepyts.springframework.beans.factory.InitializingBean;
  * @author derekyi
  * @date 2020/11/24
  */
-@Component()
+@Component
 public class Person implements DestroyBean, InitializingBean {
 
     private String name;

@@ -1,6 +1,7 @@
 package com.sleepyts.springframework.tests;
 
 import com.sleepyts.springframework.context.ClassPathXmlApplicationContext;
+import com.sleepyts.springframework.services.WorldService;
 import org.junit.Test;
 
 public class ComponentScanTests {
@@ -8,9 +9,7 @@ public class ComponentScanTests {
     @Test
     public void testComponentScan() {
         ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("classpath:component-scan.xml");
-
-        Object car = classPathXmlApplicationContext.getBean("car");
-        Object car1 = classPathXmlApplicationContext.getBean("car");
-        System.out.println(car.equals(car1));
+        WorldService worldService = classPathXmlApplicationContext.getBean("WorldServiceImpl", WorldService.class);
+        worldService.explode();
     }
 }

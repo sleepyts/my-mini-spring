@@ -7,7 +7,7 @@ import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.config.BeanReference;
 import com.sleepyts.springframework.beans.factory.suppport.AbstractBeanDefinitionReader;
 import com.sleepyts.springframework.beans.factory.suppport.BeanDefinitionRegistry;
-import com.sleepyts.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import com.sleepyts.springframework.annotation.ClassPathBeanDefinitionScanner;
 import com.sleepyts.springframework.core.io.Resource;
 import com.sleepyts.springframework.core.io.ResourceLoader;
 import org.dom4j.Document;

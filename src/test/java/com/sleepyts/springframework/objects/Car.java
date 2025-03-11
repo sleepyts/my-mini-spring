@@ -1,7 +1,9 @@
 package com.sleepyts.springframework.objects;
 
-import com.sleepyts.springframework.context.annotation.Component;
-import com.sleepyts.springframework.context.annotation.Scope;
+import com.sleepyts.springframework.annotation.Autowired;
+import com.sleepyts.springframework.annotation.Component;
+import com.sleepyts.springframework.annotation.Qualifier;
+import com.sleepyts.springframework.annotation.Scope;
 
 /**
  * @author derekyi
@@ -11,6 +13,9 @@ import com.sleepyts.springframework.context.annotation.Scope;
 @Component("car")
 @Scope("prototype")
 public class Car {
+
+    @Autowired
+    private Person person;
 
     private String brand;
 
@@ -27,5 +32,9 @@ public class Car {
         return "Car{" +
                 "brand='" + brand + '\'' +
                 '}';
+    }
+
+    public Person getPerson() {
+        return person;
     }
 }

@@ -1,12 +1,8 @@
 package com.sleepyts.springframework.beans.factory.suppport;
 
 import cn.hutool.core.util.StrUtil;
-import com.sleepyts.springframework.aop.framework.autoproxy.AutoProxyBeanProcessor;
 import com.sleepyts.springframework.beans.factory.*;
-import com.sleepyts.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
-import com.sleepyts.springframework.beans.factory.config.BeanPostProcessor;
-import com.sleepyts.springframework.beans.factory.config.BeanReference;
+import com.sleepyts.springframework.beans.factory.config.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,6 +20,17 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
         return doCreateBean(beanName, beanDefinition);
     }
 
+    protected void applyBeanPostProcessProperties(Object bean, String beanName, BeanDefinition beanDefinition) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                PropertyValues pvs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessProperties(beanDefinition.getPropertyValues(), bean, beanName);
+                if (pvs != null) {
+                    beanDefinition.setPropertyValues(pvs);
+                }
+            }
+        }
+    }
+
     protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
         Object bean = applyBeanPostProcessorBeforeInitialization(beanDefinition.getBeanClass(), beanName);
         if (bean != null) {
@@ -36,14 +43,13 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
 
     protected Object applyBeanPostProcessorBeforeInitialization(Class<?> beanClass, String beanName) {
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
-            if (beanPostProcessor instanceof AutoProxyBeanProcessor) {
-                Object result = ((AutoProxyBeanProcessor) beanPostProcessor).autoProxyProcess(beanClass, beanName);
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
                 if (result != null) {
                     return result;
                 }
             }
         }
-
         return null;
     }
 
@@ -52,6 +58,7 @@ public abstract class AbstractAutowiredCapableBeanFactory extends AbstractBeanFa
         Object bean = null;
         try {
             bean = doInstanceBean(beanDefinition);
+            applyBeanPostProcessProperties(bean, beanName, beanDefinition);
             doAddPropertyValues(bean, beanDefinition, beanName);
             initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {

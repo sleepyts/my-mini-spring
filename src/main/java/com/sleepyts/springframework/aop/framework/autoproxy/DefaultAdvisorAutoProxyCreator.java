@@ -9,15 +9,16 @@ import com.sleepyts.springframework.aop.framework.ProxyFactory;
 import com.sleepyts.springframework.beans.factory.BeanFactory;
 import com.sleepyts.springframework.beans.factory.BeanFactoryAware;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
+import com.sleepyts.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import com.sleepyts.springframework.beans.factory.suppport.DefaultListableBeanFactory;
-import com.sleepyts.springframework.context.annotation.Component;
+import com.sleepyts.springframework.annotation.Component;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import java.util.Collection;
 
 @Component
-public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, AutoProxyBeanProcessor {
+public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, InstantiationAwareBeanPostProcessor {
 
     private DefaultListableBeanFactory beanFactory;
 
@@ -28,7 +29,7 @@ public class DefaultAdvisorAutoProxyCreator implements BeanFactoryAware, AutoPro
     }
 
     @Override
-    public Object autoProxyProcess(Class<?> beanClass, String beanName) {
+    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
         // Ignore Advice, PointCut, and Advisor classes
         if (Advice.class.isAssignableFrom(beanClass) ||
                 PointCut.class.isAssignableFrom(beanClass) ||

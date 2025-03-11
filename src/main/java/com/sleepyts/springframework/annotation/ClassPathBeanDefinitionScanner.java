@@ -1,4 +1,4 @@
-package com.sleepyts.springframework.context.annotation;
+package com.sleepyts.springframework.annotation;
 
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;
 import com.sleepyts.springframework.beans.factory.suppport.BeanDefinitionRegistry;

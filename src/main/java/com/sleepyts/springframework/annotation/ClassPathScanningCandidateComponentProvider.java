@@ -1,4 +1,4 @@
-package com.sleepyts.springframework.context.annotation;
+package com.sleepyts.springframework.annotation;
 
 import cn.hutool.core.util.ClassUtil;
 import com.sleepyts.springframework.beans.factory.config.BeanDefinition;

@@ -1,6 +1,5 @@
 package com.sleepyts.springframework.services;
 
-import com.sleepyts.springframework.context.annotation.Component;
 import com.sleepyts.springframework.test.TestAnnotation;
 
 /**

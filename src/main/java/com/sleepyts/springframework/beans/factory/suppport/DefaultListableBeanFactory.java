@@ -71,4 +71,16 @@ public class DefaultListableBeanFactory extends AbstractAutowiredCapableBeanFact
         Set<String> names = beanDefinitionMap.keySet();
         return names.toArray(new String[names.size()]);
     }
+
+    @Override
+    public <T> T getBean(Class<T> type) {
+        Map<String, T> beansOfType = getBeansOfType(type);
+        if (beansOfType.isEmpty()) {
+            throw new RuntimeException("No bean of type " + type.getName() + " found");
+        }
+        if (beansOfType.size() > 1) {
+            throw new RuntimeException("More than one bean of type " + type.getName() + " found");
+        }
+        return beansOfType.values().iterator().next();
+    }
 }

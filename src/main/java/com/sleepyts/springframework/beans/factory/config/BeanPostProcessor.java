@@ -1,7 +1,11 @@
 package com.sleepyts.springframework.beans.factory.config;
 
 public interface BeanPostProcessor {
-    Object postProcessBeforeInitialization(Object bean, String beanName);
+    default Object postProcessBeforeInitialization(Object bean, String beanName){
+        return bean;
+    }
 
-    Object postProcessAfterInitialization(Object bean, String beanName);
+    default Object postProcessAfterInitialization(Object bean, String beanName){
+        return bean;
+    }
 }

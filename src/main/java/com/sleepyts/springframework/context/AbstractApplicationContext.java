@@ -12,6 +12,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void refresh() {
+        registerShutDownHook();
         // BeanFactory加载BeanDefinition
         refreshBeanFactory();
 
@@ -25,6 +26,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
         //实例化所有单例bean
         beanFactory.preInstantiateSingletons();
+    }
+
+
+    @Override
+    public <T> T getBean(Class<T> type) {
+        return getBeanFactory().getBean(type);
     }
 
     @Override
